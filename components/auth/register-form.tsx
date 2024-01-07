@@ -2,9 +2,9 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/schemas";
+import { RegisterSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
-import { login } from "@/app/_api/services/authService";
+import { signUp } from "@/app/_api/services/authService";
 import {
   Form,
   FormControl,
@@ -17,29 +17,31 @@ import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
 import FormError from "../form-error";
 import FormSuccess from "../form-success";
-import { LoginDto } from "@/app/_models/DTOs/loginDto";
 import { useState, useTransition } from "react";
+import { RegisterDto } from "@/app/_models/DTOs/registerDto";
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState("");
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       nick_name: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    const serverProps: LoginDto = {
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    const serverProps: RegisterDto = {
       user_name: values.nick_name,
+      email: values.email,
       password: values.password,
     };
 
     startTransition(() => {
       try {
-        login(serverProps)
+        console.log(serverProps);
+        signUp(serverProps)
           .then((res: any) => {
             if (!res.status) {
               throw new Error("User ile ilgili bir hata oluştu");
@@ -66,9 +68,9 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Welcome back"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/auth/register"
+      headerLabel="Hesap Oluştur"
+      backButtonLabel="Zaten hesabın var mı?"
+      backButtonHref="/auth/login"
       showSocial
     >
       <Form {...form}>
@@ -85,6 +87,24 @@ export const LoginForm = () => {
                       {...field}
                       placeholder="krhnatalay"
                       type="text"
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E posta</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="atalay.karahan@ornek.com"
+                      type="email"
                       disabled={isPending}
                     />
                   </FormControl>
@@ -114,7 +134,7 @@ export const LoginForm = () => {
           <FormError message={errorMessage} />
           <FormSuccess message="" />
           <Button type="submit" className="w-full">
-            Giriş Yap
+            Kayıt Ol
           </Button>
         </form>
       </Form>
