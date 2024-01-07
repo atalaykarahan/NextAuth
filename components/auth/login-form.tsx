@@ -15,6 +15,7 @@ import {
 import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
 import FormError from "../form-error";
+import FormSuccess from "../form-success";
 
 export const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -27,7 +28,7 @@ export const LoginForm = () => {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     console.log(values);
-  }
+  };
 
   return (
     <CardWrapper
@@ -46,35 +47,28 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Kullanıcı Adı</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="krhnatalay"
-                      type="text"
-                    />
+                    <Input {...field} placeholder="krhnatalay" type="text" />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Şifre</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="********"
-                      type="password"
-                    />
+                    <Input {...field} placeholder="********" type="password" />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormError message="Bir şeyler ters gitti"/>
+          <FormError message="" />
+          <FormSuccess message="" />
           <Button type="submit" className="w-full">
             Giriş Yap
           </Button>
