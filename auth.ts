@@ -53,28 +53,17 @@ export const {
   providers: [
     Credentials({
       async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials);
-
-        if (validatedFields.success) {
-          const { nick_name, password } = validatedFields.data;
-
-          const loginProps: LoginDto = {
-            user_name: nick_name,
-            password: password,
-          };
-
-          try {
-            const user = await check(loginProps);
-            if (user) {
-              return {
-                id: user.data.user_id,
-                name: user.data.user_name,
-                email: user.data.email,
-              };
-            }
-          } catch (error) {
-            throw new Error("User authentication error");
+        try {
+          const user = await getLoggedInUser();
+          if (user) {
+            return {
+              id: user.user_id,
+              name: user.user_name,
+              email: user.email,
+            };
           }
+        } catch (error) {
+          throw new Error("User authentication error");
         }
 
         return null;
