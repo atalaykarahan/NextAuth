@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
-import { login } from "@/app/_api/services/authService";
 import {
   Form,
   FormControl,
@@ -17,8 +16,10 @@ import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
 import FormError from "../form-error";
 import FormSuccess from "../form-success";
-import { LoginDto } from "@/app/_models/DTOs/loginDto";
 import { useState, useTransition } from "react";
+import { loginAction } from "@/actions/login";
+import { login } from "@/app/_api/services/authService";
+import { LoginDto } from "@/app/_models/DTOs/loginDto";
 
 export const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -32,14 +33,15 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    const serverProps: LoginDto = {
-      user_name: values.nick_name,
-      password: values.password,
-    };
-
     startTransition(() => {
+
+      const serverProps: LoginDto = {
+        user_name: values.nick_name,
+        password: values.password,
+      };
+
       try {
-        login(serverProps)
+         login(serverProps)
           .then((res: any) => {
             if (!res.status) {
               throw new Error("User ile ilgili bir hata oluştu");
@@ -47,7 +49,15 @@ export const LoginForm = () => {
             return res.data;
           })
           .then((response: any) => {
-            console.log(response);
+            
+              loginAction(values).then((data) => {
+        if (data && data.error) {
+          // data varsa ve içinde error varsa, hata mesajını set et
+          setErrorMessage(data.error);
+        } else {
+          // Başka bir işlem yap veya başarı durumunu işle
+        }
+      });
           })
           .catch((err: any) => {
             if (err.response.status) {
@@ -59,9 +69,18 @@ export const LoginForm = () => {
       } catch (error) {
         console.log("kullanıcı ile ilgili bir sorun oluştu ", error);
       }
-    });
 
-    console.log(serverProps);
+
+      // loginAction(values).then((data) => {
+      //   if (data && data.error) {
+      //     // data varsa ve içinde error varsa, hata mesajını set et
+      //     setErrorMessage(data.error);
+      //   } else {
+      //     // Başka bir işlem yap veya başarı durumunu işle
+      //   }
+      // });
+      
+    });
   };
 
   return (
