@@ -1,6 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { check, getLoggedInUserServer, signUpServer } from "./app/_api/services/authService";
+import { check, getLoggedInUserServer, signInServerWithGoole, signUpServer } from "./app/_api/services/authService";
 import Google from "next-auth/providers/google";
 
 import { LoginDto } from "./app/_models/DTOs/loginDto";
@@ -52,16 +52,13 @@ export const {
     },
     async signIn({ account, profile }) {
       if (account && account.provider === "google" && profile && profile.given_name && profile.sub && profile.email && profile.email.endsWith("@gmail.com")) {
-        console.log(profile);
-        // return profile.email_verified && profile.email.endsWith("@gmail.com")
-
         const user :RegisterDto = {
           user_name: profile.given_name,
           password: profile.sub,
           email: profile.email,
         }
 
-        const signUpServerApi = await signUpServer(user);
+        const signUpServerApi = await signInServerWithGoole(user);
         if(signUpServerApi){
           console.log("benim yazdığım giriş yapma kodu ->",signUpServerApi)
           return true;
@@ -69,7 +66,7 @@ export const {
 
         return false;
       }
-      return false // Do different verification for other providers that don't have `email_verified`
+      return true // Do different verification for other providers that don't have `email_verified`
     },
   },
   session: { strategy: "jwt" },
