@@ -1,20 +1,27 @@
 "use server";
 
+import { logoutServer } from "@/app/_api/services/authService";
 import { signOut } from "@/auth";
 import { cookies } from "next/dist/client/components/headers";
 
 export const logout = async () => {
-    /*if you wanna do some server stuff you can using 
+  /*if you wanna do some server stuff you can using 
     like this logout method */
-    cookies().delete('connect.sid')
-    await signOut();
-}
+  cookies().delete("connect.sid");
+  await signOut();
+};
 
+export const logoutTogether = async () => {
+  await logoutServer().then(async (res: any) => {
+    if (res === 200) {
+      cookies().delete("connect.sid");
+      await signOut();
+    }
+  });
+};
 
-
-
-
-// you can paste if you want to use settings page on server side 
+// DONT DELETE THIS
+// you can paste if you want to use settings page to server side
 // import { auth, signOut } from "@/auth";
 
 // const SettingsPage = async () => {

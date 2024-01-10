@@ -85,6 +85,17 @@ export const signInServerWithGoole = async (user:RegisterDto) => {
   return response;
 };
 
+export const logoutServer = async () => {
+  const query = await fetch(`${process.env.BASE_URL}/users/logout`, {
+    method:'POST',
+    headers: {
+      Cookie: `${getMyCookie()}`,
+    },
+  });
+  const response = await query.status;
+  return response;
+}
+
 //#endregion All server side request (XmlHttpRequest) end
 
 
