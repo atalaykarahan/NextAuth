@@ -18,6 +18,7 @@ export const LoginButton = ({
 
 
   const onClick = () => {
+    console.log("giriş yapma ekranı için butona basıldı");
     router.push("/auth/login");
   };
 
